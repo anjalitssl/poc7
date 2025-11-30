@@ -1,10 +1,11 @@
-FROM eclipse-temurin:17-jdk-alpine AS build
+# --- Build Stage ---
+FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
 COPY . .
-RUN ./mvnw -DskipTests clean package
+RUN ./mvnw clean package -DskipTests
 
-FROM eclipse-temurin:17-jre-alpine
+# --- Run Stage ---
+FROM eclipse-temurin:17-jre
 WORKDIR /app
-COPY --from=build /app/target/poc7-0.0.1-SNAPSHOT.jar app.jar
-EXPOSE 7070
+COPY --from=build /app/target/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
